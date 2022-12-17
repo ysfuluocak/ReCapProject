@@ -5,6 +5,7 @@ using Core.Aspect.Autofac.ValidationAspect;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,11 @@ namespace Business.Concrete
         public IDataResult<Car> GetById(int carId)
         {
             return new SuccessDataResult<Car>(_carDal.Get(c=>c.CarId == carId));
+        }
+
+        public IDataResult<List<CarColorBrandImageDto>> GetCarColorBrandImageDto()
+        {
+            return new SuccessDataResult<List<CarColorBrandImageDto>>(_carDal.GetCarColorBrandImageDto());
         }
 
         public IResult Update(Car car)

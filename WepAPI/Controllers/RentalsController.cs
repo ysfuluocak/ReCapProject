@@ -25,6 +25,18 @@ namespace WepAPI.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpGet("getdto")]
+        public IActionResult GetCarRentalCustomerDto()
+        {
+            var result = _rentalService.GetCarRentalCustomerDto();
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public IActionResult Add(Rental rental)
         {
