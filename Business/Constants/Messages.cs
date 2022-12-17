@@ -16,6 +16,6 @@ namespace Business.Constants
         public static string RentalDeleted = "Araba katalogdan silindi";
         public static string RentalUpdated = "Kiralık araba güncellendi";
         public static string RentalListed = "Kiralık arabalar listelendi";
-
+        internal static string ImageNotFound = "Resim bulunamadı";
     }
 }
