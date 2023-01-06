@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IResult = Core.Utilities.Results.IResult;
 
 namespace Business.Concrete
 {
@@ -23,14 +25,14 @@ namespace Business.Concrete
 
         public IResult Add(IFormFile file, CarImage carImage)
         {
-            UploadImage(file, carImage);
+            BusinessRules.Run(UploadImage(file,carImage));
             _carImageDal.Add(carImage);
             return new SuccessResult();
         }
 
         public IResult Delete(CarImage carImage)
         {
-            DeleteImageFromFolder(carImage);
+            BusinessRules.Run(DeleteImageFromFolder(carImage));
             _carImageDal.Delete(carImage);
 
             return new SuccessResult();
@@ -48,9 +50,7 @@ namespace Business.Concrete
 
         public IResult Update(IFormFile file, CarImage carImage)
         {
-            DeleteImageFromFolder(carImage);
-            UploadImage(file, carImage);
-
+            BusinessRules.Run(DeleteImageFromFolder(carImage), UploadImage(file, carImage));
             _carImageDal.Update(carImage);
             return new SuccessResult();
         }
@@ -60,12 +60,13 @@ namespace Business.Concrete
             var result = _carImageDal.GetAll(c => c.CarId == carId);
             if (result.Count > 0)
             {
+                result.ForEach(c => c.ImagePath = "/images/" + c.ImagePath);
                 return new SuccessDataResult<List<CarImage>>(result);
             }
             else
             {
-                result.Add(new CarImage { CarId = carId, ImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot//images", "DefaultLogo.jpg") });
-                return new ErrorDataResult<List<CarImage>>(result, Messages.ImageNotFound);
+                result.Add(new CarImage { CarId = carId, ImagePath = Path.Combine("/images", "DefaultLogo.jpg").Replace("\\","/") });
+                return new SuccessDataResult<List<CarImage>>(result, Messages.ImageNotFound);
             }
         }
 
@@ -76,8 +77,8 @@ namespace Business.Concrete
             if (result < 5)
             {
                 var fileName = file.FileName;
-                var guidFileName = Guid.NewGuid() + "_" + fileName;
-                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot//images", guidFileName);
+                var guidFileName = Guid.NewGuid().ToString()+ "_" + fileName;
+                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images", guidFileName);
                 file.CopyTo(new FileStream(imagePath, FileMode.Create));
                 carImage.ImagePath = guidFileName;
                 carImage.AddDate = DateTime.Now;
@@ -91,7 +92,7 @@ namespace Business.Concrete
         private IResult DeleteImageFromFolder(CarImage carImage)
         {
             var deletedImage = _carImageDal.Get(c => c.CarImageId == carImage.CarImageId);
-            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot//images", deletedImage.ImagePath);
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","images", deletedImage.ImagePath);
             File.Delete(imagePath);
             return new SuccessResult();
         }
