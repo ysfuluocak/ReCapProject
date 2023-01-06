@@ -26,10 +26,10 @@ namespace WepAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getdto")]
+        [HttpGet("getdetails")]
         public IActionResult GetCarRentalCustomerDto()
         {
-            var result = _rentalService.GetCarRentalCustomerDto();
+            var result = _rentalService.GetRentalDetails();
             if (result.Success)
             {
                 return Ok(result);

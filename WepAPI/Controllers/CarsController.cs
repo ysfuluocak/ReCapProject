@@ -26,10 +26,10 @@ namespace WepAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getdto")]
-        public IActionResult GetCarColorBrandImageDto()
+        [HttpGet("getdetails")]
+        public IActionResult GetCarDetails()
         {
-            var result = _carService.GetCarColorBrandImageDto();
+            var result = _carService.GetCarDetails();
             if (result.Success)
             {
                 return Ok(result);
